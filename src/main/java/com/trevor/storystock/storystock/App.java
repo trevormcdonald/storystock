@@ -19,12 +19,22 @@ public class App
     public static void main( String[] args )
     {
     	String html = args[0];
+    	getText(html);
+    }
+    /***
+     * When given the address of an article, returns the main body.
+     * @param html String, address of the article
+     * @return String that is the main content of the article.
+     */
+    public static String getText(String html){
+    	String content;
     	try {
-            return getText(new BoilerpipeSAXInput(new InputSource(
-                    new StringReader(html))).getTextDocument());
-        } catch (SAXException e) {
-            throw new BoilerpipeProcessingException(e);
-        }
-        System.out.println( "Hello World!" );
+			content= ArticleExtractor.INSTANCE.getText(html);
+			return content;
+		} catch (BoilerpipeProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
     }
 }
