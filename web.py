@@ -6,6 +6,9 @@ one big string.
 
 Inspiration: 
 https://rstudio-pubs-static.s3.amazonaws.com/79360_850b2a69980c4488b1db95987a24867a.html
+
+Also good:
+https://radimrehurek.com/gensim/wiki.html#latent-dirichlet-allocation
 """
 
 
@@ -26,9 +29,12 @@ class App(object):
 		self.urls = []
 		self.texts = []
 		self.prepped_texts = []
+		
 		self.tokenizer = RegexpTokenizer(r'\w+')
 		self.stops = get_stop_words('en')
 		self.stemmer = PorterStemmer()
+		
+		self.dictionary= corpora.Dictionary()
 		
 
 	def get_urls(self, fname):
@@ -64,9 +70,14 @@ class App(object):
 			tokens= self.tokenizer.tokenize(t)
 			stopped_tokens = [i for i in tokens if not i in self.stops]
 			stems = [self.stemmer.stem(i) for i in stopped_tokens]
+			#stems = [self.stemmer.stem(i) for i in tokens if not i in self.stops]
 			self.prepped_texts.append(stems)
 		
-	
+	def lda_once(self):
+		dictionary = corpora.Dictionary(self.prepped_texts)
+		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
+		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=5, id2word = dictionary, passes=20)
+		print(ldamodel.print_topics(num_topics=5, num_words=10))
 	
 
 if __name__ == '__main__':
