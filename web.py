@@ -86,6 +86,7 @@ if __name__ == '__main__':
 	app.get_urls("sites.txt")
 	app.get_texts()
 	app.prep_for_lda()
+	app.lda_once()
 	
 	
 	
