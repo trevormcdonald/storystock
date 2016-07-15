@@ -26,8 +26,12 @@ import gensim
 class App(object):
 	
 	def __init__(self):
+		#urls stored as strings
 		self.urls = []
+		#retrieved texts stored as strings
 		self.texts = []
+		#texts stored as unicode lists after
+		#stopping and stemming
 		self.prepped_texts = []
 		
 		self.tokenizer = RegexpTokenizer(r'\w+')
@@ -44,6 +48,8 @@ class App(object):
 		self.urls.extend(content)
 
 	def parse(self, url):
+		#retrieves all <p> elements from the url
+		#returns as single string
 		r = requests.get(url)
 
 		data = r.text
@@ -74,18 +80,26 @@ class App(object):
 			self.prepped_texts.append(stems)
 		
 	def lda_once(self):
+		#add texts to dictionary for ids
 		dictionary = corpora.Dictionary(self.prepped_texts)
+		#create bag-of-words from the texts
 		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
+		#make the LDA model from our dictionary and corpus
 		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=5, id2word = dictionary, passes=20)
+		#print 5 topics with 10 words each
 		print(ldamodel.print_topics(num_topics=5, num_words=10))
 	
 
 if __name__ == '__main__':
 	print("weeee")
 	app = App()
+	#fetch the sites
 	app.get_urls("sites.txt")
+	#extract the paragraphs
 	app.get_texts()
+	#tokenize, remove stop words, and stem
 	app.prep_for_lda()
+	#Find and print 5 topics
 	app.lda_once()
 	
 	
