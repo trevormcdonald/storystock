@@ -22,6 +22,8 @@ from nltk.stem.porter import PorterStemmer
 from gensim import corpora, models
 import gensim
 
+import news as n
+
 
 class App(object):
 	
@@ -42,10 +44,22 @@ class App(object):
 		
 
 	def get_urls(self, fname):
+	
 		with open(fname) as f:
 			#content is list of sites to extract text from
 			content = [line.strip('\n') for line in f]
 		self.urls.extend(content)
+		
+	def get_news(self, url, flag):
+		#given a news site, tries to extract article links
+		#definitely works for Hacker News
+		
+		#returns list of urls for articles as a list of strings (unicode)
+		news = n.News(url)
+		news.set_flag(flag)
+		news.find_links()
+		return news.links
+		
 
 	def parse(self, url):
 		#retrieves all <p> elements from the url
@@ -54,7 +68,7 @@ class App(object):
 
 		data = r.text
 
-		soup = BeautifulSoup(data, "html.parser", parseOnlyThese=SoupStrainer('p'))
+		soup = BeautifulSoup(data, "html.parser", parse_only=SoupStrainer('p'))
 
 		pars = ""
 
@@ -86,7 +100,7 @@ class App(object):
 		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
 		#make the LDA model from our dictionary and corpus
 		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=topics, id2word = dictionary, passes=passes)
-		#print 5 topics with 10 words each
+		
 		print(ldamodel.print_topics(num_topics=topics, num_words=words))
 	
 

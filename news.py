@@ -20,10 +20,10 @@ class News(object):
 
 		data = r.text
 
-		soup = BeautifulSoup(data, 'html.parser', parse_only=SoupStrainer('p'))
+		soup = BeautifulSoup(data, 'html.parser', parse_only=SoupStrainer('a'))
 
-		for href in soup.find_all('a', class_=self.flag):
-			self.links.append(href.get_text())
+		for a in soup.find_all('a', class_=self.flag, href=True):
+			self.links.append(a['href'])
 
 
 
