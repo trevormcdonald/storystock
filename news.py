@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 import requests
 
@@ -20,7 +20,7 @@ class News(object):
 
 		data = r.text
 
-		soup = BeautifulSoup(data, 'html.parser')
+		soup = BeautifulSoup(data, 'html.parser', parse_only=SoupStrainer('p'))
 
 		for href in soup.find_all('a', class_=self.flag):
 			self.links.append(href.get_text())

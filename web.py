@@ -12,7 +12,7 @@ https://radimrehurek.com/gensim/wiki.html#latent-dirichlet-allocation
 """
 
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 import requests
 
@@ -54,7 +54,7 @@ class App(object):
 
 		data = r.text
 
-		soup = BeautifulSoup(data, "html.parser")
+		soup = BeautifulSoup(data, "html.parser", parseOnlyThese=SoupStrainer('p'))
 
 		pars = ""
 
@@ -79,15 +79,15 @@ class App(object):
 			#stems = [self.stemmer.stem(i) for i in tokens if not i in self.stops]
 			self.prepped_texts.append(stems)
 		
-	def lda_once(self):
+	def lda_once(self, topics, passes, words):
 		#add texts to dictionary for ids
 		dictionary = corpora.Dictionary(self.prepped_texts)
 		#create bag-of-words from the texts
 		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
 		#make the LDA model from our dictionary and corpus
-		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=5, id2word = dictionary, passes=20)
+		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=topics, id2word = dictionary, passes=passes)
 		#print 5 topics with 10 words each
-		print(ldamodel.print_topics(num_topics=5, num_words=10))
+		print(ldamodel.print_topics(num_topics=topics, num_words=words))
 	
 
 if __name__ == '__main__':
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 	#tokenize, remove stop words, and stem
 	app.prep_for_lda()
 	#Find and print 5 topics
-	app.lda_once()
+	app.lda_once(5, 20, 10)
 	
 	
 	
