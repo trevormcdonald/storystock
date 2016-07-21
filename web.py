@@ -41,6 +41,7 @@ class App(object):
 		self.stemmer = PorterStemmer()
 		
 		self.dictionary= corpora.Dictionary()
+		self.model = None
 		
 
 	def get_urls(self, fname):
@@ -100,8 +101,15 @@ class App(object):
 		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
 		#make the LDA model from our dictionary and corpus
 		lsimodel= gensim.models.lsimodel.LsiModel(corpus, num_topics=topics, id2word = dictionary, onepass=False, power_iters=iters)
+		self.model = lsimodel
 		
 		print(lsimodel.print_topics(num_topics=topics, num_words=words))
+	
+	def save(self):
+		self.model.save("lsi.model")
+		
+	def load(self):
+		self.model = models.LsiModel.load("lsi.model")
 	
 
 if __name__ == '__main__':
@@ -115,6 +123,8 @@ if __name__ == '__main__':
 	app.prep_for_lsi()
 	#Find and print 5 topics
 	app.lsi_once(5, 10, 10)
+	#save the model
+	app.save()
 	
 	
 	
