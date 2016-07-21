@@ -83,7 +83,7 @@ class App(object):
 		for u in self.urls:
 			self.texts.append(self.parse(u))
 			
-	def prep_for_lda(self):
+	def prep_for_lsi(self):
 		#tokenize, stop, stem
 		for t in self.texts:
 			t = t.lower()
@@ -93,15 +93,15 @@ class App(object):
 			#stems = [self.stemmer.stem(i) for i in tokens if not i in self.stops]
 			self.prepped_texts.append(stems)
 		
-	def lda_once(self, topics, passes, words):
+	def lsi_once(self, topics, iters, words):
 		#add texts to dictionary for ids
 		dictionary = corpora.Dictionary(self.prepped_texts)
 		#create bag-of-words from the texts
 		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
 		#make the LDA model from our dictionary and corpus
-		ldamodel= gensim.models.ldamodel.LdaModel(corpus, num_topics=topics, id2word = dictionary, passes=passes)
+		lsimodel= gensim.models.lsimodel.LsiModel(corpus, num_topics=topics, id2word = dictionary, onepass=False, power_iters=iters)
 		
-		print(ldamodel.print_topics(num_topics=topics, num_words=words))
+		print(lsimodel.print_topics(num_topics=topics, num_words=words))
 	
 
 if __name__ == '__main__':
@@ -112,9 +112,9 @@ if __name__ == '__main__':
 	#extract the paragraphs
 	app.get_texts()
 	#tokenize, remove stop words, and stem
-	app.prep_for_lda()
+	app.prep_for_lsi()
 	#Find and print 5 topics
-	app.lda_once(5, 20, 10)
+	app.lsi_once(5, 10, 10)
 	
 	
 	
