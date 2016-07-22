@@ -9,6 +9,20 @@ https://rstudio-pubs-static.s3.amazonaws.com/79360_850b2a69980c4488b1db95987a248
 
 Also good:
 https://radimrehurek.com/gensim/wiki.html#latent-dirichlet-allocation
+
+TODO:
+Fully leverage LSI framework
+
+Make sure saving exactly what needs to be saved
+
+change methods to accept helpful arguments
+
+Make similarities work better
+
+More integration with other classes
+
+
+
 """
 
 
@@ -19,7 +33,7 @@ import requests
 from nltk.tokenize import RegexpTokenizer
 from stop_words import get_stop_words
 from nltk.stem.porter import PorterStemmer
-from gensim import corpora, models
+from gensim import corpora, models, similarities
 import gensim
 
 import news as n
@@ -110,7 +124,15 @@ class App(object):
 		
 	def load(self):
 		self.model = models.LsiModel.load("lsi.model")
-	
+
+	def get_similarity(self, prepped_text):
+		#take a prepped text, convert to LSI space
+		vec_bow = self.dictionary.doc2bow(prepped_text)
+		vec_lsi = self.lsimodel[vec_bow]
+		#create the similarities, return the best 5
+		index = similarities.Similarity(self.corpus, num_features=10, num_best=6)
+		sims = index[vec_lsi]
+		return sims
 
 if __name__ == '__main__':
 	print("weeee")

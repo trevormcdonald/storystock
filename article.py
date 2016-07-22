@@ -1,3 +1,12 @@
+"""
+Reprsents one article
+
+TODO:
+Link to News object if appropriate
+Give IDs associated with the doc and topics
+Give similarity lists?
+Find way to recover complete text (just url?)
+"""
 import web as w
 
 class Article(object):

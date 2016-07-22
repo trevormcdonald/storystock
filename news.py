@@ -1,3 +1,12 @@
+"""
+Represents a news aggregate site.
+TODO:
+Generalize parsing to include more attributes
+
+
+possibly link closer to articles
+"""
+
 from bs4 import BeautifulSoup, SoupStrainer
 
 import requests
