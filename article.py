@@ -8,6 +8,7 @@ Give similarity lists?
 Find way to recover complete text (just url?)
 """
 import web as w
+import news as n
 
 class Article(object):
 

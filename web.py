@@ -13,7 +13,7 @@ https://radimrehurek.com/gensim/wiki.html#latent-dirichlet-allocation
 TODO:
 Fully leverage LSI framework
 
-Make sure saving exactly what needs to be saved
+Make sure right corpus is used
 
 change methods to accept helpful arguments
 
@@ -55,6 +55,7 @@ class App(object):
 		self.stemmer = PorterStemmer()
 		
 		self.dictionary= corpora.Dictionary()
+		self.corpus = None
 		self.model = None
 		
 
@@ -110,25 +111,29 @@ class App(object):
 		
 	def lsi_once(self, topics, iters, words):
 		#add texts to dictionary for ids
-		dictionary = corpora.Dictionary(self.prepped_texts)
+		self.dictionary = corpora.Dictionary(self.prepped_texts)
 		#create bag-of-words from the texts
-		corpus = [dictionary.doc2bow(text) for text in self.prepped_texts]
+		self.corpus = [self.dictionary.doc2bow(text) for text in self.prepped_texts]
 		#make the LDA model from our dictionary and corpus
-		lsimodel= gensim.models.lsimodel.LsiModel(corpus, num_topics=topics, id2word = dictionary, onepass=False, power_iters=iters)
+		lsimodel= gensim.models.lsimodel.LsiModel(self.corpus, num_topics=topics, id2word = self.dictionary, onepass=False, power_iters=iters)
 		self.model = lsimodel
 		
 		print(lsimodel.print_topics(num_topics=topics, num_words=words))
 	
 	def save(self):
 		self.model.save("lsi.model")
+		self.dictionary.save("words.dict")
+		self.corpus.save("corpus.mm")
 		
 	def load(self):
 		self.model = models.LsiModel.load("lsi.model")
+		self.dictionary = self.dictionary.load("words.dict")
+		self.corpus = 
 
 	def get_similarity(self, prepped_text):
 		#take a prepped text, convert to LSI space
 		vec_bow = self.dictionary.doc2bow(prepped_text)
-		vec_lsi = self.lsimodel[vec_bow]
+		vec_lsi = self.model[vec_bow]
 		#create the similarities, return the best 5
 		index = similarities.Similarity(self.corpus, num_features=10, num_best=6)
 		sims = index[vec_lsi]
@@ -147,6 +152,8 @@ if __name__ == '__main__':
 	app.lsi_once(5, 10, 10)
 	#save the model
 	app.save()
+
+
 	
 	
 	
